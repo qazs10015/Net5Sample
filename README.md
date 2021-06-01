@@ -71,6 +71,7 @@ dotnet add package Microsoft.AspNetCore.Authentication.JwtBearer
                 });
 	
 加入驗證的 middleware
+
 	app.UseAuthentication();
 	
 建立AccountuController
