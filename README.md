@@ -34,16 +34,61 @@ dotnet add package NSwag.AspNetCore
 加入JWT套件
 dotnet add package Microsoft.AspNetCore.Authentication.JwtBearer
 
-新增JwtHelpers.cs並做基本設定
+新增JwtHelpers.cs並做基本設定(可以自行設定預設過期時間、角色資料等)
+
+於StartUp.cs注入JwtHelpers.cs並開啟驗證
+
 	// inject jwtHelpers
 	services.AddSingleton<JwtHelpers>();
 	// inject Authentication
 	// 可自行使用codeSnippet實作
-	services.AddAuthentication....
+	 services
+                .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.IncludeErrorDetails = true; // Default: true
+
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        // Let "sub" assign to User.Identity.Name
+                        NameClaimType = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier",
+                        // Let "roles" assign to Roles for [Authorized] attributes
+                        RoleClaimType = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role",
+
+                        // Validate the Issuer
+                        ValidateIssuer = true,
+                        ValidIssuer = Configuration.GetValue<string>("JwtSettings:Issuer"),
+
+                        ValidateAudience = false,
+                        //ValidAudience = "JwtAuthDemo", // TODO
+
+                        ValidateLifetime = true,
+
+                        ValidateIssuerSigningKey = false,
+
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration.GetValue<string>("JwtSettings:SignKey")))
+                    };
+                });
 	
 加入驗證的 middleware
 	app.UseAuthentication();
+	
 建立AccountuController
+加入注入的JwtHelpers服務，並驗證登入資料，驗證成功後產生token
 
+	[HttpPost("")]
+        public ActionResult<LoginResult> Login(Login model)
+        {
+            if (model.userName == "junyu")
+            {
+                // 如果需要設定角色權限可以自行設定role
+                // 範例為Admin
+                return new LoginResult() { Token = jwt.GenerateToken(model.userName, "Admin") };
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
 
-
+	
