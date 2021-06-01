@@ -22,6 +22,7 @@ dotnet add package NSwag.AspNetCore
 	// 可以自行設定document的顯示資訊
     services.AddOpenApiDocument();
 加入middleware
+
 	// 開啟openAPI功能
 	app.UseOpenApi();
 	// 開啟openAPI的swaggerUI介面
