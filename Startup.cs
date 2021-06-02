@@ -44,21 +44,41 @@ namespace webapi1
 
 
             // 注入OpenAPI v3.0
-            services.AddOpenApiDocument(document =>
+            // services.AddOpenApiDocument(document =>
+            // {
+            //     document.DocumentProcessors.Add(
+            //     new SecurityDefinitionAppender("JWT",
+            //     new OpenApiSecurityScheme
+            //     {
+            //         Type = OpenApiSecuritySchemeType.Http,
+            //         Scheme = JwtBearerDefaults.AuthenticationScheme,
+            //         Name = "Authorization",
+            //         In = OpenApiSecurityApiKeyLocation.Header,
+            //         Description = "Type into the textbox: Bearer {your JWT token}.",
+            //     }));
+
+            //     document.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor("JWT"));
+            // });
+
+            // 注入OpenAPI v3.0
+            services.AddOpenApiDocument(config =>
             {
-                document.DocumentProcessors.Add(
-                new SecurityDefinitionAppender("JWT",
-                new OpenApiSecurityScheme
+                // 這個 OpenApiSecurityScheme 物件請勿加上 Name 與 In 屬性，否則產生出來的 OpenAPI Spec 格式會有錯誤！
+                var apiScheme = new OpenApiSecurityScheme()
                 {
                     Type = OpenApiSecuritySchemeType.Http,
                     Scheme = JwtBearerDefaults.AuthenticationScheme,
-                    Name = "Authorization",
-                    In = OpenApiSecurityApiKeyLocation.Header,
-                    Description = "Type into the textbox: Bearer {your JWT token}.",
-                }));
+                    // BearerFormat = "JWT", // for documentation purposes (OpenAPI only)
+                    Description = "Copy JWT Token into the value field: {token}"
+                };
 
-                document.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor("JWT"));
+                // 這裡會同時註冊 SecurityDefinition (.components.securitySchemes) 與 SecurityRequirement (.security)
+                config.AddSecurity("Bearer", apiScheme);
+
+                // 這段是為了將 "Bearer" 加入到 OpenAPI Spec 裡 Operator 的 security (Security requirements) 中
+                config.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor());
             });
+
 
 
             services

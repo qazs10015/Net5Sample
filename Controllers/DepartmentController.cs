@@ -30,7 +30,7 @@ namespace webapi1.Controllers
         [HttpGet("{id}")]
         public ActionResult<Department> GetDepartmentById(int id)
         {
-            return null;
+            return Ok(from item in dbContext.Department where item.DepartmentId == id select item);
         }
 
         [HttpPost("")]
