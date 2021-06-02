@@ -42,43 +42,38 @@ namespace webapi1
             // inject jwtHelpers
             services.AddSingleton<JwtHelpers>();
 
-
-            // 注入OpenAPI v3.0
-            // services.AddOpenApiDocument(document =>
+            // 顯示swaggerDocument info的方法
+            // services.AddSwaggerDocument(document =>
             // {
-            //     document.DocumentProcessors.Add(
-            //     new SecurityDefinitionAppender("JWT",
-            //     new OpenApiSecurityScheme
+            //     document.PostProcess = d =>
             //     {
-            //         Type = OpenApiSecuritySchemeType.Http,
-            //         Scheme = JwtBearerDefaults.AuthenticationScheme,
-            //         Name = "Authorization",
-            //         In = OpenApiSecurityApiKeyLocation.Header,
-            //         Description = "Type into the textbox: Bearer {your JWT token}.",
-            //     }));
-
-            //     document.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor("JWT"));
+            //         d.Info.Title = "This is title";
+            //         d.Info.Contact = new OpenApiContact()
+            //         {
+            //             Email = "fly12610@gmail.com",
+            //             Name = "Junyu Wang",
+            //             Url = "https://github.com/qazs10015"
+            //         };
+            //         d.Info.Description = "This is my sample swagger";
+            //         d.Info.Version = "This is version";
+            //     };
             // });
-
-            services.AddSwaggerDocument(document =>
-            {
-                document.PostProcess = d =>
-                {
-                    d.Info.Title = "This is title";
-                    d.Info.Contact = new OpenApiContact()
-                    {
-                        Email = "fly12610@gmail.com",
-                        Name = "Junyu Wang",
-                        Url = "https://github.com/qazs10015"
-                    };
-                    d.Info.Description = "This is my sample swagger";
-                    d.Info.Version = "This is version";
-                };
-            });
 
             // 注入OpenAPI v3.0
             services.AddOpenApiDocument(config =>
             {
+                // 設定文件名稱 (重要) (預設值: v1)
+                config.DocumentName = "This is document name";
+                // 設定文件或 API 版本資訊
+                config.Version = "This is version";
+                // 設定文件標題 (當顯示 Swagger/ReDoc UI 的時候會顯示在畫面上)
+                config.Title = "This is title";
+                // 設定文件簡要說明
+                config.Description = "This is my sample swagger";
+
+                // 是否要顯示 API 呼叫範例
+                // config.GenerateExamples = true;
+
                 // 這個 OpenApiSecurityScheme 物件請勿加上 Name 與 In 屬性，否則產生出來的 OpenAPI Spec 格式會有錯誤！
                 var apiScheme = new OpenApiSecurityScheme()
                 {
