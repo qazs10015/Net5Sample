@@ -60,6 +60,22 @@ namespace webapi1
             //     document.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor("JWT"));
             // });
 
+            services.AddSwaggerDocument(document =>
+            {
+                document.PostProcess = d =>
+                {
+                    d.Info.Title = "This is title";
+                    d.Info.Contact = new OpenApiContact()
+                    {
+                        Email = "fly12610@gmail.com",
+                        Name = "Junyu Wang",
+                        Url = "https://github.com/qazs10015"
+                    };
+                    d.Info.Description = "This is my sample swagger";
+                    d.Info.Version = "This is version";
+                };
+            });
+
             // 注入OpenAPI v3.0
             services.AddOpenApiDocument(config =>
             {
